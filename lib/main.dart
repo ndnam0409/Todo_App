@@ -4,28 +4,44 @@ import 'widget/card_body_widget.dart';
 import 'widget/modal_bottom.dart';
 
 void main(List<String> args){
-  runApp(MaterialApp(
+  runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
     home: MyApp(),
   ));
 }
 
 
-class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key:key);
+class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key:key);
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final List<DataItems> items =  [
-    DataItems(id: '1', name: 'Tập thể dục buổi sáng'),
-    DataItems(id: '2', name: 'Ăn sáng'),
-    DataItems(id: '3', name: 'Uống cafe'),
-    DataItems(id: '4', name: 'Bơi lội'),
+    
   ];
+
+  void handleAddTask(String name){
+    final newItem = DataItems(id: DateTime.now().toString(), name: name);
+    setState(() {
+      items.add(newItem);
+    });
+  }
+
+  void handleDeleteTask(String id){
+    setState(() {
+      items.removeWhere((item) => item.id == id);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.cyan.shade300,
+        backgroundColor: const Color.fromARGB(255, 101, 199, 212),
         centerTitle: true,
         title: const Text( 
           'ToDo List', 
@@ -38,7 +54,11 @@ class MyApp extends StatelessWidget {
       body: SingleChildScrollView(
         padding:const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
-          children: items.map((item) => CardBody(item : item)).toList(),
+          children: items.map((item) => CardBody(
+              index: items.indexOf(item),
+              item : item, 
+              handleDelete: handleDeleteTask,
+            )).toList(),
         )
       ),
         floatingActionButton: FloatingActionButton(
@@ -51,10 +71,10 @@ class MyApp extends StatelessWidget {
               isScrollControlled: true,
               context: context, 
               builder: (BuildContext context){
-              return const ModalBottom();
+              return ModalBottom(addTask: handleAddTask);
             });
           }, 
-          backgroundColor: Colors.cyan.shade300,
+          backgroundColor: const Color.fromARGB(255, 101, 199, 212),
           child: const Icon(
             Icons.add,
             size: 30,
